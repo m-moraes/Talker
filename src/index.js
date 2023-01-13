@@ -8,6 +8,8 @@ const PORT = '3000';
 
 const { readTalker } = require('./utils/fsUtils');
 const { generateToken } = require('./utils/generateToken');
+const validateEmail = require('./middlewares/validateEmail');
+const validatePassword = require('./middlewares/validatePassword');
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -28,7 +30,7 @@ app.get('/talker/:id', async (req, res) => {
   res.status(200).json(talkerId);
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', validateEmail, validatePassword, (req, res) => {
   const { email, password } = req.body;
   const token = generateToken();
 
