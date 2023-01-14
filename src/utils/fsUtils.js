@@ -25,7 +25,13 @@ const writeTalker = async (newTalker) => {
   }
 };
 
+const updateTalker = async (updatedTalker) => {
+  const data = await fs.writeFile(TALKER_DATA_PATH, JSON.stringify(updatedTalker));
+  return data;
+};
+
 module.exports = {
   readTalker,
   writeTalker,
+  updateTalker,
 };

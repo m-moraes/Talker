@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs').promises;
 
 const app = express();
 app.use(express.json());
@@ -85,7 +86,8 @@ app.delete('/talker/:id', auth, async (req, res) => {
   const { id } = req.params;
   const talker = await readTalker();
   const talkerId = talker.findIndex((t) => t.id === Number(id));
-  talker.splice(talkerId, 1);
+  const newTalkers = talker.splice(talkerId, 1);
+  await updateTalker(newTalkers);
   return res.status(204).json();
 });
 
