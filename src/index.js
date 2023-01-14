@@ -6,7 +6,7 @@ app.use(express.json());
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
 
-const { readTalker, writeTalker } = require('./utils/fsUtils');
+const { readTalker, writeTalker, updateTalker } = require('./utils/fsUtils');
 const { generateToken } = require('./utils/generateToken');
 const validateEmail = require('./middlewares/validateEmail');
 const validatePassword = require('./middlewares/validatePassword');
@@ -18,16 +18,16 @@ const validateWatchedAt = require('./middlewares/validateWatchedAt');
 const validateRate = require('./middlewares/validateRate');
 
 app.get('/talker/search', auth, async (req, res) => {
-    const { q } = req.query;
-    const talker = await readTalker();
+  const { q } = req.query;
+  const talker = await readTalker();
 
-    const filterTalker = talker.filter((t) => t.name.includes(q));
-    
-    if (!q || q.length === 0) {
-      return res.status(200).json(talker);
-    }
+  const filterTalker = talker.filter((t) => t.name.includes(q));
 
-    return res.status(200).json(filterTalker);
+  if (!q || q.length === 0) {
+    return res.status(200).json(talker);
+  }
+
+  return res.status(200).json(filterTalker);
 });
 
 // não remova esse endpoint, e para o avaliador funcionar
@@ -73,6 +73,13 @@ app.post('/talker',
 
     res.status(201).json(newTalker);
   });
+
+app.delete('/talker/:id', auth, async (req, res) => {
+  const { id } = req.params;
+  const talker = await readTalker();
+  const filterTalker = talker.filter((t) => t.id !== Number(id));
+  res.status(204).json();
+});
 
 app.listen(PORT, () => {
   console.log('Online');
