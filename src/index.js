@@ -6,10 +6,16 @@ app.use(express.json());
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
 
-const { readTalker } = require('./utils/fsUtils');
+const { readTalker, writeTalker } = require('./utils/fsUtils');
 const { generateToken } = require('./utils/generateToken');
 const validateEmail = require('./middlewares/validateEmail');
 const validatePassword = require('./middlewares/validatePassword');
+const auth = require('./middlewares/auth');
+const validateName = require('./middlewares/validateName');
+const validateAge = require('./middlewares/validateAge');
+const validateTalk = require('./middlewares/validateTalk');
+const validateWatchedAt = require('./middlewares/validateWatchedAt');
+const validateRate = require('./middlewares/validateRate');
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -38,6 +44,22 @@ app.post('/login', validateEmail, validatePassword, (req, res) => {
     return res.status(200).json({ token: `${token}` });
   }
 });
+
+app.post('/talker',
+  auth,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatchedAt,
+  validateRate,
+  async (req, res) => {
+    const bodyInfo = req.body;
+    const talker = await readTalker();
+    const newTalker = { id: talker.length + 1, ...bodyInfo };
+    await writeTalker(newTalker);
+
+    res.status(201).json(newTalker);
+  });
 
 app.listen(PORT, () => {
   console.log('Online');
