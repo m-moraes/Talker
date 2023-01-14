@@ -17,6 +17,19 @@ const validateTalk = require('./middlewares/validateTalk');
 const validateWatchedAt = require('./middlewares/validateWatchedAt');
 const validateRate = require('./middlewares/validateRate');
 
+app.get('/talker/search', auth, async (req, res) => {
+    const { q } = req.query;
+    const talker = await readTalker();
+
+    const filterTalker = talker.filter((t) => t.name.includes(q));
+    
+    if (!q || q.length === 0) {
+      return res.status(200).json(talker);
+    }
+
+    return res.status(200).json(filterTalker);
+});
+
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
