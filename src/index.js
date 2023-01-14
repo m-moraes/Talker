@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -74,20 +75,13 @@ app.post('/talker',
     res.status(201).json(newTalker);
   });
 
-/* app.delete('/talker/:id', auth, async (req, res) => {
-  const { id } = req.params;
-  const talker = await readTalker();
-  const filterTalker = talker.filter((t) => t.id !== Number(id));
-  res.status(204).json();
-}); */
-
 app.delete('/talker/:id', auth, async (req, res) => {
   const { id } = req.params;
   const talker = await readTalker();
-  const talkerId = talker.findIndex((t) => t.id === Number(id));
-  const newTalkers = talker.splice(talkerId, 1);
-  await updateTalker(newTalkers);
-  return res.status(204).json();
+  const filterTalker = talker.filter((t) => Number(t.id) !== Number(id));
+
+  await updateTalker(path.resolve(__dirname, './talker.json'), filterTalker);
+  res.status(204).json();
 });
 
 app.listen(PORT, () => {
