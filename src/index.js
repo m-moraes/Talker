@@ -74,11 +74,19 @@ app.post('/talker',
     res.status(201).json(newTalker);
   });
 
-app.delete('/talker/:id', auth, async (req, res) => {
+/* app.delete('/talker/:id', auth, async (req, res) => {
   const { id } = req.params;
   const talker = await readTalker();
   const filterTalker = talker.filter((t) => t.id !== Number(id));
   res.status(204).json();
+}); */
+
+app.delete('/talker/:id', auth, async (req, res) => {
+  const { id } = req.params;
+  const talker = await readTalker();
+  const talkerId = talker.findIndex((t) => t.id === Number(id));
+  talker.splice(talkerId, 1);
+  return res.status(204).json();
 });
 
 app.listen(PORT, () => {
